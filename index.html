@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الحضور في المسجد</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            direction: rtl;
+            margin: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>تسجيل الحضور في المسجد</h1>
+    <p>يرجى الانتظار... نحن نتحقق من موقعك.</p>
+
+    <script>
+        function checkProximity() {
+            navigator.geolocation.getCurrentPosition(
+                function (position) {
+                    const userLat = position.coords.latitude;
+                    const userLng = position.coords.longitude;
+
+                    // إحداثيات المساجد
+                    const mosqueLocations = [
+                        { lat: 31.8912, lng: 35.2048 }, // المسجد 1
+                        { lat: 31.9123, lng: 35.2356 }, // المسجد 2
+                        { lat: 31.8956, lng: 35.2234 }  // المسجد 3
+                    ];
+
+                    const isNearby = mosqueLocations.some((mosque) => {
+                        const distance = Math.sqrt(
+                            Math.pow(userLat - mosque.lat, 2) +
+                            Math.pow(userLng - mosque.lng, 2)
+                        );
+                        return distance < 0.005; // نصف قطر 500 متر
+                    });
+
+                    if (isNearby) {
+                        const lastScanTime = localStorage.getItem("lastScanTime");
+                        const currentTime = new Date().getTime();
+
+                        if (lastScanTime && currentTime - lastScanTime < 3600000) { // نافذة لمدة ساعة
+                            alert("لقد قمت بالتسجيل في هذه الصلاة بالفعل. حاول مرة أخرى في الصلاة التالية.");
+                        } else {
+                            localStorage.setItem("lastScanTime", currentTime);
+                            alert("تم تسجيل حضورك بنجاح! يرجى ملء النموذج الآن");
+                            window.location.href = "https://forms.gle/QqY5UBuFLKuoVs8g8"; // رابط النموذج
+                        }
+                    } else {
+                        alert("يجب أن تكون بالقرب من أحد المساجد للتسجيل.");
+                    }
+                },
+                function (error) {
+                    alert("تعذر تحديد موقعك. يرجى التأكد من تفعيل GPS والسماح بالوصول إلى الموقع.");
+                }
+            );
+        }
+
+        checkProximity();
+    </script>
+</body>
+</html>
