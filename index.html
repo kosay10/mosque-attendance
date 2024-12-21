@@ -12,12 +12,33 @@
             margin: 20px;
         }
     </style>
-</head>
-<body>
-    <h1>تسجيل الحضور في المسجد</h1>
-    <p>يرجى الانتظار... نحن نتحقق من موقعك.</p>
-
     <script>
+        // פונקציה לבדיקת שירותי המיקום
+        function checkLocation() {
+            navigator.geolocation.getCurrentPosition(
+                function () {
+                    // אם המיקום פעיל, בדוק קרבה
+                    checkProximity();
+                },
+                function (error) {
+                    // אם המיקום אינו פעיל, הצג הודעה
+                    if (error.code === error.PERMISSION_DENIED) {
+                        const userAgent = navigator.userAgent.toLowerCase();
+                        if (userAgent.includes("iphone") || userAgent.includes("ipad")) {
+                            alert("خدمات الموقع معطّلة. يرجى تفعيلها من الإعدادات: الإعدادات > الخصوصية > خدمات الموقع > Safari.");
+                        } else if (userAgent.includes("android")) {
+                            alert("خدمات الموقع معطّلة. يرجى تفعيلها من الإعدادات: الإعدادات > الموقع.");
+                        } else {
+                            alert("خدمات الموقع معطّلة. يرجى تفعيلها من إعدادات الجهاز.");
+                        }
+                    } else {
+                        alert("تعذر تحديد موقعك. يرجى التأكد من تفعيل GPS والمحاولة مرة أخرى.");
+                    }
+                }
+            );
+        }
+
+        // פונקציה לבדיקת קרבה למסגדים
         function checkProximity() {
             navigator.geolocation.getCurrentPosition(
                 function (position) {
@@ -60,7 +81,12 @@
             );
         }
 
-        checkProximity();
+        // בדוק מיקום כשהדף נטען
+        document.addEventListener("DOMContentLoaded", checkLocation);
     </script>
+</head>
+<body>
+    <h1>تسجيل الحضور في المسجد</h1>
+    <p>يرجى الانتظار... نحن نتحقق من موقعك.</p>
 </body>
 </html>
